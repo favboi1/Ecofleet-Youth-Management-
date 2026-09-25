@@ -17,3 +17,19 @@ drop policy if exists "Users can view their own assignment" on public.volunteer_
 create policy "Users can view their own assignment"
     on public.volunteer_assignments for select
     using (auth.uid() = user_id);
+
+drop policy if exists "Admins can view all assignments" on public.volunteer_assignments;
+create policy "Admins can view all assignments"
+    on public.volunteer_assignments for select
+    using (public.is_admin());
+
+drop policy if exists "Admins can insert assignments" on public.volunteer_assignments;
+create policy "Admins can insert assignments"
+    on public.volunteer_assignments for insert
+    with check (public.is_admin());
+
+drop policy if exists "Admins can update assignments" on public.volunteer_assignments;
+create policy "Admins can update assignments"
+    on public.volunteer_assignments for update
+    using (public.is_admin())
+    with check (public.is_admin());

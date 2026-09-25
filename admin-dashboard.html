@@ -140,6 +140,39 @@
                 </form>
             </section>
 
+            <section class="admin-panel assignment-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="dashboard-label">STATION ASSIGNMENTS</p>
+                        <h3>Assign Volunteer Station</h3>
+                    </div>
+                </div>
+
+                <form id="assignmentForm" class="task-form">
+                    <div class="form-grid">
+                        <label>
+                            <span>Volunteer</span>
+                            <select id="assignmentUser" required>
+                                <option value="">Loading volunteers...</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            <span>Station Name</span>
+                            <input type="text" id="stationName" placeholder="e.g. Central Station" required>
+                        </label>
+                    </div>
+
+                    <label>
+                        <span>Station Address / Location</span>
+                        <input type="text" id="stationAddress" placeholder="e.g. Kigali, Rwanda" required>
+                    </label>
+
+                    <button type="submit" class="checkin-btn">Save Station Assignment</button>
+                    <p id="assignmentMessage" class="account-message" role="status"></p>
+                </form>
+            </section>
+
             <section class="admin-panel list-panel">
                 <div class="panel-header">
                     <div>
@@ -168,6 +201,11 @@
         const accountSelect = document.getElementById("accountSelect");
         const accountRole = document.getElementById("accountRole");
         const accountMessage = document.getElementById("accountMessage");
+        const assignmentForm = document.getElementById("assignmentForm");
+        const assignmentUser = document.getElementById("assignmentUser");
+        const stationName = document.getElementById("stationName");
+        const stationAddress = document.getElementById("stationAddress");
+        const assignmentMessage = document.getElementById("assignmentMessage");
         const attendanceGrid = document.getElementById("attendanceGrid");
 
         function formatDate(value) {
@@ -315,6 +353,7 @@
 
             if (error) {
                 accountSelect.innerHTML = '<option value="">Unable to load accounts</option>';
+                assignmentUser.innerHTML = '<option value="">Unable to load volunteers</option>';
                 return;
             }
 
@@ -323,6 +362,13 @@
                     `<option value="${profile.id}" data-role="${profile.role}">${profile.full_name || profile.id} (${profile.role})</option>`
                 ).join('')
                 : '<option value="">No accounts found</option>';
+
+            assignmentUser.innerHTML = data?.length
+                ? '<option value="">Select a volunteer</option>' + data
+                    .filter((profile) => profile.role === "volunteer")
+                    .map((profile) => `<option value="${profile.id}">${profile.full_name || profile.id}</option>`)
+                    .join('')
+                : '<option value="">No volunteers found</option>';
         }
 
         async function ensureAdminAccess() {
@@ -397,6 +443,71 @@
             await loadProfiles();
             accountSelect.value = "";
             accountRole.value = "admin";
+        });
+
+        assignmentForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            assignmentMessage.textContent = "Saving assignment...";
+            assignmentMessage.className = "account-message";
+
+            const selectedVolunteer = assignmentUser.value;
+            const selectedStationName = stationName.value.trim();
+            const selectedStationAddress = stationAddress.value.trim();
+
+            if (!selectedVolunteer || !selectedStationName || !selectedStationAddress) {
+                assignmentMessage.textContent = "Please select a volunteer and complete both station fields.";
+                assignmentMessage.className = "account-message error-text";
+                return;
+            }
+
+            const { data: currentAssignment, error: lookupError } = await supabaseClient
+                .from("volunteer_assignments")
+                .select("id")
+                .eq("user_id", selectedVolunteer)
+                .eq("active", true)
+                .maybeSingle();
+
+            if (lookupError) {
+                assignmentMessage.textContent = "Assignment could not be loaded: " + lookupError.message;
+                assignmentMessage.className = "account-message error-text";
+                return;
+            }
+
+            if (currentAssignment) {
+                const { error } = await supabaseClient
+                    .from("volunteer_assignments")
+                    .update({
+                        station_name: selectedStationName,
+                        station_address: selectedStationAddress,
+                        active: true,
+                        assigned_at: new Date().toISOString()
+                    })
+                    .eq("id", currentAssignment.id);
+
+                if (error) {
+                    assignmentMessage.textContent = "Assignment update failed: " + error.message;
+                    assignmentMessage.className = "account-message error-text";
+                    return;
+                }
+            } else {
+                const { error } = await supabaseClient
+                    .from("volunteer_assignments")
+                    .insert({
+                        user_id: selectedVolunteer,
+                        station_name: selectedStationName,
+                        station_address: selectedStationAddress,
+                        active: true
+                    });
+
+                if (error) {
+                    assignmentMessage.textContent = "Assignment creation failed: " + error.message;
+                    assignmentMessage.className = "account-message error-text";
+                    return;
+                }
+            }
+
+            assignmentMessage.textContent = "Station assignment saved.";
+            assignmentForm.reset();
         });
 
         logoutBtn.addEventListener("click", async function () {
