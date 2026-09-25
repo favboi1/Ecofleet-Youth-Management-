@@ -1,0 +1,1195 @@
+/* ========================================
+   EYVMS - Main Styles
+   Ecofleet Youth Volunteer Monitoring System
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #071a2b;
+    color: white;
+}
+
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+
+.navbar {
+    width: 100%;
+    height: 82px;
+    padding: 0 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(5, 20, 34, 0.97);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand img {
+    width: 105px;
+    height: auto;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title {
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.brand-subtitle {
+    font-size: 10px;
+    color: #9eb0c3;
+    margin-top: 3px;
+}
+
+nav {
+    display: flex;
+    gap: 32px;
+}
+
+nav a {
+    color: #c5d2df;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: white;
+}
+
+.login-btn {
+    border: 1px solid #39c5a4;
+    background: transparent;
+    color: white;
+    padding: 11px 24px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.login-btn:hover {
+    background: #39c5a4;
+    color: #061a2b;
+}
+
+
+/* ========================================
+   HERO
+   ======================================== */
+
+.hero {
+    min-height: 650px;
+    display: flex;
+    align-items: center;
+    padding: 80px 10%;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(4, 19, 32, 0.98),
+            rgba(4, 19, 32, 0.78),
+            rgba(4, 19, 32, 0.45)
+        ),
+        url("../assets/Ecofleet-logo.png");
+
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 420px;
+}
+
+.hero-content {
+    max-width: 750px;
+}
+
+.hero-label {
+    color: #39c5a4;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.hero h1 {
+    font-size: clamp(45px, 6vw, 76px);
+    line-height: 1.05;
+    margin: 22px 0;
+    font-weight: 800;
+}
+
+.hero h1 span {
+    display: block;
+    color: #39c5a4;
+}
+
+.hero p {
+    max-width: 620px;
+    color: #b7c7d8;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 35px;
+}
+
+.primary-btn,
+.secondary-btn {
+    padding: 15px 26px;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+        text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.primary-btn {
+    border: none;
+    background: #39c5a4;
+    color: #061a2b;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid #607589;
+    color: white;
+}
+
+.secondary-btn:hover {
+    border-color: #39c5a4;
+}
+
+
+/* ========================================
+   FEATURES
+   ======================================== */
+
+.features {
+    padding: 100px 8%;
+    background: #f4f7f9;
+    color: #102538;
+}
+
+.section-heading {
+    text-align: center;
+    max-width: 700px;
+    margin: auto;
+}
+
+.section-heading span,
+.about span {
+    color: #159b80;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.section-heading h2 {
+    font-size: 38px;
+    margin: 15px 0;
+}
+
+.section-heading p {
+    color: #637386;
+    line-height: 1.7;
+}
+
+.feature-grid {
+    max-width: 1100px;
+    margin: 55px auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e1f7f2;
+    color: #159b80;
+    border-radius: 10px;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 22px;
+}
+
+.feature-card h3 {
+    margin-bottom: 12px;
+    font-size: 20px;
+}
+
+.feature-card p {
+    color: #68798b;
+    line-height: 1.6;
+}
+
+
+/* ========================================
+   ABOUT
+   ======================================== */
+
+.about {
+    padding: 100px 10%;
+    background: #071a2b;
+}
+
+.about-content {
+    max-width: 750px;
+}
+
+.about h2 {
+    font-size: 46px;
+    margin: 18px 0;
+}
+
+.about p {
+    color: #aebdcb;
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+footer {
+    padding: 45px 8%;
+    background: #04121f;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #899bab;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.footer-brand img {
+    width: 95px;
+}
+
+.footer-brand span {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+.copyright {
+    margin-top: 25px;
+    font-size: 12px;
+}
+
+
+/* ========================================
+   MOBILE
+   ======================================== */
+
+@media (max-width: 800px) {
+
+    .navbar {
+        padding: 0 5%;
+    }
+
+    nav {
+        display: none;
+    }
+
+    .hero {
+        padding: 70px 7%;
+        background-size: 250px;
+    }
+
+    .hero h1 {
+        font-size: 45px;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        max-width: 250px;
+    }
+}
+/* ========================================
+   LOGIN PAGE
+   ======================================== */
+
+.login-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(57, 197, 164, 0.12),
+            transparent 35%
+        ),
+        #071a2b;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+
+.login-container {
+    width: 100%;
+    max-width: 440px;
+    background: #ffffff;
+    color: #102538;
+    padding: 45px;
+    border-radius: 16px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.3);
+}
+
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.login-logo img {
+    width: 130px;
+    height: auto;
+}
+
+
+.login-header {
+    text-align: center;
+}
+
+.login-header > span {
+    color: #159b80;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 3px;
+}
+
+.login-header h1 {
+    margin-top: 10px;
+    font-size: 32px;
+}
+
+.login-header p {
+    margin-top: 8px;
+    color: #718096;
+    font-size: 14px;
+}
+
+
+/* ROLE SELECTOR */
+
+.role-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    background: #edf2f5;
+    padding: 5px;
+    border-radius: 8px;
+
+    margin: 30px 0;
+}
+
+
+.role-btn {
+    border: none;
+    padding: 11px;
+    border-radius: 6px;
+
+    background: transparent;
+    color: #607386;
+
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+.role-btn.active {
+    background: #ffffff;
+    color: #159b80;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* FORM */
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.login-form label {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+
+.login-form input[type="email"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 14px;
+
+    border: 1px solid #d7e0e7;
+    border-radius: 7px;
+
+    font-size: 14px;
+    outline: none;
+
+    margin-bottom: 20px;
+}
+
+
+.login-form input:focus {
+    border-color: #39c5a4;
+
+    box-shadow:
+        0 0 0 3px rgba(57, 197, 164, 0.12);
+}
+
+
+/* LOGIN OPTIONS */
+
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 12px;
+    margin-bottom: 25px;
+}
+
+
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #667789;
+}
+
+
+.login-options a {
+    color: #159b80;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+
+/* SUBMIT */
+
+.login-submit {
+    width: 100%;
+    padding: 15px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #159b80;
+    color: white;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+
+.login-submit:hover {
+    background: #107a66;
+    transform: translateY(-1px);
+}
+
+
+/* BACK HOME */
+
+.back-home {
+    display: block;
+
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #667789;
+    text-decoration: none;
+
+    font-size: 13px;
+}
+
+
+.back-home:hover {
+    color: #159b80;
+}
+/* =========================================
+   EFYMS VOLUNTEER DASHBOARD
+   ========================================= */
+
+.dashboard-header {
+    background: #071c2c;
+    color: white;
+    padding: 18px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-brand img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.dashboard-brand h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.dashboard-brand span {
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.logout-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.logout-btn:hover {
+    background: white;
+    color: #071c2c;
+}
+
+
+/* Main dashboard */
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 50px 6%;
+}
+
+.welcome-section {
+    margin-bottom: 35px;
+}
+
+.dashboard-label {
+    color: #008f87;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.welcome-section h1 {
+    font-size: 38px;
+    margin: 8px 0;
+    color: #071c2c;
+}
+
+.welcome-section p {
+    color: #667085;
+}
+
+
+/* Cards */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-bottom: 30px;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    border: 1px solid #e8eef2;
+}
+
+.card-icon {
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.dashboard-card h3 {
+    margin: 0 0 8px;
+    color: #071c2c;
+}
+
+.dashboard-card p {
+    color: #667085;
+}
+
+.dashboard-card small {
+    display: block;
+    color: #667085;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+
+/* Attendance */
+
+.attendance-section {
+    background: #071c2c;
+    color: white;
+    padding: 35px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+}
+
+.attendance-section h2 {
+    margin-top: 0;
+}
+
+.attendance-section p {
+    color: #c7d3dc;
+}
+
+.attendance-message {
+    min-height: 20px;
+    margin-top: 18px;
+    color: #bfeee3;
+}
+
+.attendance-message.error {
+    color: #ffb4b1;
+}
+
+.attendance-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.checkin-btn,
+.checkout-btn,
+.dashboard-action {
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.checkin-btn {
+    background: #00a884;
+    color: white;
+}
+
+.checkout-btn {
+    background: #d9534f;
+    color: white;
+}
+
+.dashboard-action {
+    background: #071c2c;
+    color: white;
+    margin-top: 12px;
+}
+
+.checkin-btn:hover,
+.checkout-btn:hover,
+.dashboard-action:hover {
+    opacity: 0.85;
+}
+
+.checkin-btn:disabled,
+.checkout-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.report-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    overflow-y: auto;
+    padding: 35px 20px;
+    background: rgba(4, 18, 31, 0.72);
+}
+
+.report-form-container {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 30px;
+    background: white;
+    color: #071c2c;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.report-form-header,
+.report-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.report-form-header h2 {
+    margin-top: 6px;
+}
+
+.close-report-btn {
+    border: 0;
+    background: transparent;
+    color: #667085;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.report-form {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-top: 25px;
+}
+
+.report-form label {
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.report-form select,
+.report-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d7e0e7;
+    border-radius: 7px;
+    font: inherit;
+    color: #102538;
+}
+
+.report-form textarea {
+    resize: vertical;
+}
+
+.report-location-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400 !important;
+}
+
+.report-location-option input {
+    accent-color: #159b80;
+}
+
+.report-form-actions {
+    justify-content: flex-end;
+    margin-top: 14px;
+}
+
+.report-message {
+    min-height: 20px;
+    color: #159b80;
+}
+
+.report-message.error {
+    color: #c0392b;
+}
+
+
+/* Footer */
+
+.dashboard-footer {
+    text-align: center;
+    padding: 25px;
+    background: #071c2c;
+    color: #c7d3dc;
+    font-size: 13px;
+}
+
+/* Admin Portal */
+.admin-body {
+    background: #eef5f8;
+    color: #0d2438;
+}
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 6%;
+    background: #071c2c;
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-brand img {
+    width: 52px;
+    height: auto;
+}
+
+.admin-brand h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.admin-brand span {
+    opacity: 0.8;
+    font-size: 12px;
+}
+
+.admin-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.admin-user-label {
+    color: #bfeee3;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: calc(100vh - 81px);
+}
+
+.admin-sidebar {
+    background: #0d2438;
+    color: white;
+    padding: 28px 20px;
+}
+
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.nav-btn {
+    text-align: left;
+    border: 0;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: transparent;
+    color: #c9d8e5;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.nav-btn.active {
+    background: rgba(57, 197, 164, 0.12);
+    color: #75e2cc;
+}
+
+.admin-main {
+    padding: 28px 28px 40px;
+}
+
+.admin-overview {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+}
+
+.stat-card span {
+    display: block;
+    color: #667085;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+
+.stat-card strong {
+    font-size: 30px;
+    color: #071c2c;
+}
+
+.admin-panel {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+}
+
+.panel-header {
+    margin-bottom: 18px;
+}
+
+.panel-header h3 {
+    margin-top: 8px;
+    font-size: 26px;
+    color: #071c2c;
+}
+
+.task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.task-form label,
+.task-form input,
+.task-form textarea,
+.task-form select {
+    width: 100%;
+    display: block;
+}
+
+.task-form label span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #102538;
+}
+
+.task-form input,
+.task-form textarea,
+.task-form select {
+    padding: 12px 14px;
+    border: 1px solid #d7e0e7;
+    border-radius: 8px;
+    font: inherit;
+    color: #102538;
+    background: white;
+}
+
+.account-message {
+    min-height: 20px;
+    color: #159b80;
+    font-size: 13px;
+}
+
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.task-card {
+    border: 1px solid #e7edf2;
+    border-radius: 12px;
+    padding: 18px;
+    background: #f9fbfc;
+}
+
+.task-card-header,
+.task-meta,
+.task-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.task-priority,
+.task-status {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.task-priority.normal,
+.task-status.pending {
+    background: #e9f7ef;
+    color: #0f7e58;
+}
+
+.task-priority.high,
+.task-status.in_progress {
+    background: #fff2dd;
+    color: #b26a00;
+}
+
+.task-priority.critical,
+.task-status.done {
+    background: #fdeaea;
+    color: #b92a25;
+}
+
+.task-card h4 {
+    margin: 14px 0 8px;
+    font-size: 20px;
+    color: #071c2c;
+}
+
+.task-card p {
+    color: #667085;
+    line-height: 1.6;
+}
+
+.task-meta {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #667085;
+}
+
+.task-actions {
+    margin-top: 16px;
+}
+
+.mini-btn {
+    border: 1px solid #d4dee8;
+    background: white;
+    color: #102538;
+    padding: 8px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mini-btn.success {
+    background: #159b80;
+    color: white;
+    border-color: #159b80;
+}
+
+.empty-note {
+    color: #667085;
+    padding: 18px;
+    border: 1px dashed #ccd7df;
+    border-radius: 10px;
+    background: #f8fafb;
+}
+
+.error-text {
+    color: #b92a25;
+}
+
+@media (max-width: 900px) {
+    .admin-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-overview {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-overview,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+
+/* Mobile */
+
+@media (max-width: 800px) {
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-section h1 {
+        font-size: 30px;
+    }
+
+    .attendance-actions {
+        flex-direction: column;
+    }
+
+    .dashboard-header {
+        padding: 15px 5%;
+    }
+
+}

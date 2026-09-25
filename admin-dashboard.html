@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | EFYMS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="admin-body">
+    <header class="admin-header">
+        <div class="admin-brand">
+            <img src="assets/ecofleet-logo.png" alt="Ecofleet Logo">
+            <div>
+                <h2>EFYMS</h2>
+                <span>Admin Portal</span>
+            </div>
+        </div>
+
+        <div class="admin-header-actions">
+            <span id="adminUserLabel" class="admin-user-label">Loading...</span>
+            <button id="logoutBtn" class="logout-btn" type="button">Logout</button>
+        </div>
+    </header>
+
+    <main class="admin-shell">
+        <aside class="admin-sidebar">
+            <p class="dashboard-label">NAVIGATION</p>
+            <nav class="admin-nav">
+                <button class="nav-btn active" type="button">Overview</button>
+                <button class="nav-btn" type="button">Assignments</button>
+                <button class="nav-btn" type="button">Reports</button>
+                <button class="nav-btn" type="button">Volunteers</button>
+            </nav>
+        </aside>
+
+        <section class="admin-main">
+            <section class="admin-overview">
+                <div class="stat-card">
+                    <span>Total Tasks</span>
+                    <strong id="totalTasks">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Open Tasks</span>
+                    <strong id="openTasks">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Active Volunteers</span>
+                    <strong id="activeVolunteers">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Open Reports</span>
+                    <strong id="openReports">0</strong>
+                </div>
+            </section>
+
+            <section class="admin-panel task-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="dashboard-label">TASK MANAGEMENT</p>
+                        <h3>Create Volunteer Task</h3>
+                    </div>
+                </div>
+
+                <form id="taskForm" class="task-form">
+                    <div class="form-grid">
+                        <label>
+                            <span>Task Title</span>
+                            <input type="text" id="taskTitle" placeholder="e.g. Station check and crowd guidance" required>
+                        </label>
+
+                        <label>
+                            <span>Assign To Email</span>
+                            <input type="email" id="taskEmail" placeholder="volunteer@email.com" required>
+                        </label>
+                    </div>
+
+                    <label>
+                        <span>Description</span>
+                        <textarea id="taskDescription" rows="4" placeholder="Describe what the volunteer should do." required></textarea>
+                    </label>
+
+                    <div class="form-grid">
+                        <label>
+                            <span>Priority</span>
+                            <select id="taskPriority">
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            <span>Due Date</span>
+                            <input type="date" id="taskDueDate">
+                        </label>
+                    </div>
+
+                    <button type="submit" class="checkin-btn">Assign Task</button>
+                </form>
+            </section>
+
+            <section class="admin-panel account-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="dashboard-label">ACCOUNT MANAGEMENT</p>
+                        <h3>Assign Admin Account</h3>
+                    </div>
+                </div>
+
+                <form id="accountForm" class="task-form">
+                    <label>
+                        <span>Account</span>
+                        <select id="accountSelect" required>
+                            <option value="">Loading accounts...</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        <span>Role</span>
+                        <select id="accountRole">
+                            <option value="admin">Admin</option>
+                            <option value="volunteer">Volunteer</option>
+                        </select>
+                    </label>
+
+                    <button type="submit" class="checkin-btn">Save Account Role</button>
+                    <p id="accountMessage" class="account-message" role="status"></p>
+                </form>
+            </section>
+
+            <section class="admin-panel list-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="dashboard-label">RECENT TASKS</p>
+                        <h3>Volunteer Assignments</h3>
+                    </div>
+                </div>
+
+                <div id="tasksGrid" class="tasks-grid"></div>
+            </section>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="css/supabase.js"></script>
+    <script>
+        const logoutBtn = document.getElementById("logoutBtn");
+        const adminUserLabel = document.getElementById("adminUserLabel");
+        const taskForm = document.getElementById("taskForm");
+        const tasksGrid = document.getElementById("tasksGrid");
+        const totalTasks = document.getElementById("totalTasks");
+        const openTasks = document.getElementById("openTasks");
+        const activeVolunteers = document.getElementById("activeVolunteers");
+        const openReports = document.getElementById("openReports");
+        const accountForm = document.getElementById("accountForm");
+        const accountSelect = document.getElementById("accountSelect");
+        const accountRole = document.getElementById("accountRole");
+        const accountMessage = document.getElementById("accountMessage");
+
+        function formatDate(value) {
+            if (!value) return 'No due date';
+            return new Date(value).toLocaleDateString();
+        }
+
+        function renderTasks(tasks) {
+            if (!tasks.length) {
+                tasksGrid.innerHTML = '<div class="empty-note">No tasks assigned yet.</div>';
+                return;
+            }
+
+            tasksGrid.innerHTML = tasks.map((task) => `
+                <article class="task-card">
+                    <div class="task-card-header">
+                        <span class="task-priority ${task.priority || 'normal'}">${(task.priority || 'normal').toUpperCase()}</span>
+                        <span class="task-status ${task.status || 'pending'}">${(task.status || 'pending').replace('_', ' ')}</span>
+                    </div>
+                    <h4>${task.title}</h4>
+                    <p>${task.description}</p>
+                    <div class="task-meta">
+                        <span>Assigned to: ${task.assigned_to_email}</span>
+                        <span>Due: ${formatDate(task.due_date)}</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="mini-btn" type="button" data-task-id="${task.id}" data-status="pending">Pending</button>
+                        <button class="mini-btn" type="button" data-task-id="${task.id}" data-status="in_progress">In progress</button>
+                        <button class="mini-btn success" type="button" data-task-id="${task.id}" data-status="done">Done</button>
+                    </div>
+                </article>
+            `).join('');
+
+            document.querySelectorAll("[data-task-id]").forEach((button) => {
+                button.addEventListener("click", async () => {
+                    const id = button.dataset.taskId;
+                    const status = button.dataset.status;
+                    const { error } = await supabaseClient
+                        .from("volunteer_tasks")
+                        .update({ status })
+                        .eq("id", id);
+
+                    if (!error) {
+                        loadTasks();
+                    }
+                });
+            });
+        }
+
+        async function loadSummary() {
+            const [{ data: tasksData, error: tasksError }, { data: volunteerData, error: volunteerError }, { data: reportsData, error: reportsError }] = await Promise.all([
+                supabaseClient.from("volunteer_tasks").select("id, status"),
+                supabaseClient.from("volunteer_assignments").select("id").eq("active", true),
+                supabaseClient.from("reports").select("id, status").eq("status", "open")
+            ]);
+
+            if (!tasksError) {
+                totalTasks.textContent = String(tasksData?.length || 0);
+                openTasks.textContent = String((tasksData || []).filter((task) => task.status !== "done").length);
+            }
+
+            if (!volunteerError) {
+                activeVolunteers.textContent = String(volunteerData?.length || 0);
+            }
+
+            if (!reportsError) {
+                openReports.textContent = String(reportsData?.length || 0);
+            }
+        }
+
+        async function loadTasks() {
+            const { data, error } = await supabaseClient
+                .from("volunteer_tasks")
+                .select("*")
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                tasksGrid.innerHTML = '<div class="empty-note error-text">Unable to load tasks.</div>';
+                return;
+            }
+
+            renderTasks(data || []);
+            loadSummary();
+        }
+
+        async function loadProfiles() {
+            const { data, error } = await supabaseClient
+                .from("profiles")
+                .select("id, full_name, role")
+                .order("full_name", { ascending: true });
+
+            if (error) {
+                accountSelect.innerHTML = '<option value="">Unable to load accounts</option>';
+                return;
+            }
+
+            accountSelect.innerHTML = data?.length
+                ? '<option value="">Select an account</option>' + data.map((profile) =>
+                    `<option value="${profile.id}" data-role="${profile.role}">${profile.full_name || profile.id} (${profile.role})</option>`
+                ).join('')
+                : '<option value="">No accounts found</option>';
+        }
+
+        async function ensureAdminAccess() {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            if (error || !user) {
+                window.location.href = "pages/login.html";
+                return;
+            }
+
+            const { data: profile, error: profileError } = await supabaseClient
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .maybeSingle();
+
+            if (profileError || !profile || profile.role !== "admin") {
+                window.location.href = "pages/login.html";
+                return;
+            }
+
+            adminUserLabel.textContent = user.email || "Admin";
+        }
+
+        taskForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const newTask = {
+                title: document.getElementById("taskTitle").value.trim(),
+                description: document.getElementById("taskDescription").value.trim(),
+                assigned_to_email: document.getElementById("taskEmail").value.trim().toLowerCase(),
+                priority: document.getElementById("taskPriority").value,
+                due_date: document.getElementById("taskDueDate").value || null,
+                status: "pending",
+                created_by_email: adminUserLabel.textContent
+            };
+
+            const { error } = await supabaseClient
+                .from("volunteer_tasks")
+                .insert(newTask);
+
+            if (error) {
+                alert("Task could not be created: " + error.message);
+                return;
+            }
+
+            taskForm.reset();
+            loadTasks();
+        });
+
+        accountSelect.addEventListener("change", function () {
+            const selectedOption = accountSelect.options[accountSelect.selectedIndex];
+            accountRole.value = selectedOption?.dataset.role || "volunteer";
+        });
+
+        accountForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            accountMessage.textContent = "Saving...";
+            accountMessage.className = "account-message";
+
+            const { error } = await supabaseClient
+                .from("profiles")
+                .update({ role: accountRole.value })
+                .eq("id", accountSelect.value);
+
+            if (error) {
+                accountMessage.textContent = "Account role could not be saved: " + error.message;
+                accountMessage.className = "account-message error-text";
+                return;
+            }
+
+            accountMessage.textContent = "Account role saved.";
+            await loadProfiles();
+            accountSelect.value = "";
+            accountRole.value = "admin";
+        });
+
+        logoutBtn.addEventListener("click", async function () {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                alert("Logout failed: " + error.message);
+                return;
+            }
+            window.location.href = "pages/login.html";
+        });
+
+        ensureAdminAccess();
+        loadTasks();
+        loadProfiles();
+    </script>
+</body>
+
+</html>

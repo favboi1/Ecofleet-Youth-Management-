@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Volunteer Dashboard | EFYMS</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="dashboard-header">
+
+        <div class="dashboard-brand">
+            <img src="assets/ecofleet-logo.png" alt="Ecofleet Logo">
+            <div>
+                <h2>EFYMS</h2>
+                <span>Volunteer Dashboard</span>
+            </div>
+        </div>
+
+        <button id="logoutBtn" class="logout-btn">
+            Logout
+        </button>
+
+    </header>
+
+
+    <main class="dashboard-container">
+
+        <section class="welcome-section">
+
+            <p class="dashboard-label">VOLUNTEER PORTAL</p>
+
+            <h1>Welcome Back 👋</h1>
+
+            <p>
+                Manage your station duty, attendance and assigned tasks.
+            </p>
+
+        </section>
+
+
+        <section class="dashboard-grid">
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">📍</div>
+
+                <h3>Assigned Station</h3>
+
+                <p id="station">
+                    Loading station...
+                </p>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">🟢</div>
+
+                <h3>Duty Status</h3>
+
+                <p id="dutyStatus">
+                    Not Checked In
+                </p>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">🕐</div>
+
+                <h3>Today's Attendance</h3>
+
+                <p id="attendanceTime">
+                    No check-in yet
+                </p>
+
+                <small id="locationStatus">Location not recorded</small>
+
+            </div>
+
+        </section>
+
+
+        <section class="attendance-section">
+
+            <h2>Station Attendance</h2>
+
+            <p>
+                Check in when you arrive at your assigned station.
+            </p>
+
+            <div class="attendance-actions">
+
+                <button id="checkInBtn" class="checkin-btn" type="button">
+                    Check In
+                </button>
+
+                <button id="checkOutBtn" class="checkout-btn" type="button" disabled>
+                    Check Out
+                </button>
+
+            </div>
+
+            <p id="attendanceMessage" class="attendance-message" role="status"></p>
+
+        </section>
+
+
+        <section class="dashboard-grid">
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">📋</div>
+
+                <h3>My Tasks</h3>
+
+                <p>
+                    View your assigned volunteer tasks.
+                </p>
+
+                <button class="dashboard-action" id="viewTasksBtn" type="button">
+                    View Tasks
+                </button>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">⚠️</div>
+
+                <h3>Report Issue</h3>
+
+                <p>
+                    Report a problem at your station.
+                </p>
+
+                <button class="dashboard-action" id="reportIssueBtn" type="button">
+                    Report Issue
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <section class="report-panel" id="reportPanel" hidden>
+        <div class="report-form-container">
+            <div class="report-form-header">
+                <div>
+                    <p class="dashboard-label">STATION SUPPORT</p>
+                    <h2>Report an Issue</h2>
+                </div>
+                <button class="close-report-btn" id="closeReportBtn" type="button" aria-label="Close report form">&times;</button>
+            </div>
+
+            <form id="reportForm" class="report-form">
+                <label for="reportCategory">Issue type</label>
+                <select id="reportCategory" required>
+                    <option value="">Select an issue type</option>
+                    <option value="safety">Safety concern</option>
+                    <option value="vehicle">Vehicle or transport problem</option>
+                    <option value="passenger">Passenger or service issue</option>
+                    <option value="station">Station or equipment problem</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <label for="reportPriority">Urgency</label>
+                <select id="reportPriority" required>
+                    <option value="normal">Normal</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical - needs immediate attention</option>
+                </select>
+
+                <label for="reportDescription">What happened?</label>
+                <textarea id="reportDescription" rows="5" maxlength="2000" placeholder="Describe what happened, where it happened, and who may be affected." required></textarea>
+
+                <label class="report-location-option">
+                    <input type="checkbox" id="includeReportLocation" checked>
+                    Include my current location
+                </label>
+
+                <div class="report-form-actions">
+                    <button class="dashboard-action" id="cancelReportBtn" type="button">Cancel</button>
+                    <button class="checkin-btn" id="submitReportBtn" type="submit">Submit Report</button>
+                </div>
+                <p id="reportMessage" class="report-message" role="status"></p>
+            </form>
+        </div>
+    </section>
+
+    <section class="tasks-panel" id="tasksPanel" hidden>
+        <div class="tasks-panel-container">
+            <div class="tasks-panel-header">
+                <div>
+                    <p class="dashboard-label">MY TASKS</p>
+                    <h2>Assigned Work</h2>
+                </div>
+                <button class="close-report-btn" id="closeTasksBtn" type="button" aria-label="Close tasks panel">&times;</button>
+            </div>
+
+            <div id="tasksList" class="tasks-list"></div>
+        </div>
+    </section>
+
+
+    <footer class="dashboard-footer">
+
+        <p>
+            © 2026 Ecofleet Youth Volunteer Monitoring System By NGABO ALEX 
+        </p>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="css/supabase.js"></script>
+
+
+    <script>
+        const logoutBtn = document.getElementById("logoutBtn");
+        const checkInBtn = document.getElementById("checkInBtn");
+        const checkOutBtn = document.getElementById("checkOutBtn");
+        const dutyStatus = document.getElementById("dutyStatus");
+        const attendanceTime = document.getElementById("attendanceTime");
+        const locationStatus = document.getElementById("locationStatus");
+        const attendanceMessage = document.getElementById("attendanceMessage");
+        const station = document.getElementById("station");
+        const reportIssueBtn = document.getElementById("reportIssueBtn");
+        const reportPanel = document.getElementById("reportPanel");
+        const closeReportBtn = document.getElementById("closeReportBtn");
+        const cancelReportBtn = document.getElementById("cancelReportBtn");
+        const reportForm = document.getElementById("reportForm");
+        const submitReportBtn = document.getElementById("submitReportBtn");
+        const reportMessage = document.getElementById("reportMessage");
+        const viewTasksBtn = document.getElementById("viewTasksBtn");
+        const tasksPanel = document.getElementById("tasksPanel");
+        const closeTasksBtn = document.getElementById("closeTasksBtn");
+        const tasksList = document.getElementById("tasksList");
+        let activeAttendance = null;
+
+        function setMessage(message, isError = false) {
+            attendanceMessage.textContent = message;
+            attendanceMessage.classList.toggle("error", isError);
+        }
+
+        function formatDate(value) {
+            return new Date(value).toLocaleString();
+        }
+
+        function getLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error("Location is not supported by this browser."));
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    position => resolve(position.coords),
+                    () => reject(new Error("Location permission is required to record attendance.")),
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            });
+        }
+
+        function updateAttendanceView(record) {
+            activeAttendance = record;
+            const checkedIn = Boolean(record && !record.check_out_at);
+            checkInBtn.disabled = checkedIn;
+            checkOutBtn.disabled = !checkedIn;
+            dutyStatus.textContent = checkedIn ? "Checked In" : "Not Checked In";
+
+            if (!record) {
+                attendanceTime.textContent = "No check-in yet";
+                locationStatus.textContent = "Location not recorded";
+                return;
+            }
+
+            attendanceTime.textContent = record.check_out_at
+                ? `In: ${formatDate(record.check_in_at)} | Out: ${formatDate(record.check_out_at)}`
+                : `In: ${formatDate(record.check_in_at)}`;
+
+            const latitude = record.check_out_at ? record.check_out_latitude : record.check_in_latitude;
+            const longitude = record.check_out_at ? record.check_out_longitude : record.check_in_longitude;
+            locationStatus.textContent = latitude == null || longitude == null
+                ? "Location not recorded"
+                : `Location: ${Number(latitude).toFixed(5)}, ${Number(longitude).toFixed(5)}`;
+        }
+
+        async function loadAttendance() {
+            const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+            if (userError || !user) {
+                window.location.href = "pages/login.html";
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from("attendance")
+                .select("*")
+                .eq("user_id", user.id)
+                .order("check_in_at", { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (error) {
+                setMessage(`Attendance could not be loaded: ${error.message}`, true);
+                return;
+            }
+
+            updateAttendanceView(data);
+        }
+
+        async function loadAssignment() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) return;
+
+            const { data, error } = await supabaseClient
+                .from("volunteer_assignments")
+                .select("station_name, station_address")
+                .eq("user_id", user.id)
+                .eq("active", true)
+                .order("assigned_at", { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (error) {
+                station.textContent = "Assignment unavailable";
+                return;
+            }
+
+            station.textContent = data
+                ? `${data.station_name}${data.station_address ? ` - ${data.station_address}` : ""}`
+                : "No station assigned yet";
+        }
+
+        async function recordCheckIn() {
+            checkInBtn.disabled = true;
+            setMessage("Requesting your location...");
+
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) throw new Error("Your session has expired. Please sign in again.");
+                const coordinates = await getLocation();
+                const { data, error } = await supabaseClient
+                    .from("attendance")
+                    .insert({
+                        user_id: user.id,
+                        check_in_latitude: coordinates.latitude,
+                        check_in_longitude: coordinates.longitude
+                    })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                updateAttendanceView(data);
+                setMessage(`Checked in at ${formatDate(data.check_in_at)}.`);
+            } catch (error) {
+                checkInBtn.disabled = false;
+                setMessage(error.message, true);
+            }
+        }
+
+        async function recordCheckOut() {
+            if (!activeAttendance) return;
+            checkOutBtn.disabled = true;
+            setMessage("Requesting your location...");
+
+            try {
+                const coordinates = await getLocation();
+                const { data, error } = await supabaseClient
+                    .from("attendance")
+                    .update({
+                        check_out_latitude: coordinates.latitude,
+                        check_out_longitude: coordinates.longitude,
+                        check_out_at: new Date().toISOString()
+                    })
+                    .eq("id", activeAttendance.id)
+                    .is("check_out_at", null)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                updateAttendanceView(data);
+                setMessage(`Checked out at ${formatDate(data.check_out_at)}.`);
+            } catch (error) {
+                checkOutBtn.disabled = false;
+                setMessage(error.message, true);
+            }
+        }
+
+        function setReportMessage(message, isError = false) {
+            reportMessage.textContent = message;
+            reportMessage.classList.toggle("error", isError);
+        }
+
+        function closeReportForm() {
+            reportPanel.hidden = true;
+            reportForm.reset();
+            setReportMessage("");
+        }
+
+        function closeTaskPanel() {
+            tasksPanel.hidden = true;
+        }
+
+        function renderTasks(tasks) {
+            if (!tasks.length) {
+                tasksList.innerHTML = '<div class="task-empty">No tasks assigned yet.</div>';
+                return;
+            }
+
+            tasksList.innerHTML = tasks.map((task) => `
+                <article class="task-item">
+                    <div class="task-topline">
+                        <span class="task-badge ${task.priority || 'normal'}">${(task.priority || 'normal').toUpperCase()}</span>
+                        <span class="task-status ${task.status || 'pending'}">${(task.status || 'pending').replace('_', ' ')}</span>
+                    </div>
+                    <h3>${task.title}</h3>
+                    <p>${task.description}</p>
+                    <div class="task-meta">
+                        <span>Due: ${task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date'}</span>
+                        <span>Assigned by admin</span>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        async function loadMyTasks() {
+            const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+            if (userError || !user || !user.email) {
+                tasksList.innerHTML = '<div class="task-empty">Please sign in to view your tasks.</div>';
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from("volunteer_tasks")
+                .select("*")
+                .eq("assigned_to_email", user.email.trim().toLowerCase())
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                tasksList.innerHTML = '<div class="task-empty error-text">Tasks could not be loaded.</div>';
+                return;
+            }
+
+            renderTasks(data || []);
+        }
+
+        async function submitReport(event) {
+            event.preventDefault();
+            submitReportBtn.disabled = true;
+            setReportMessage("Sending report...");
+
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) throw new Error("Your session has expired. Please sign in again.");
+
+                let coordinates = {};
+                if (document.getElementById("includeReportLocation").checked) {
+                    const location = await getLocation();
+                    coordinates = {
+                        latitude: location.latitude,
+                        longitude: location.longitude
+                    };
+                }
+
+                const { error } = await supabaseClient.from("reports").insert({
+                    user_id: user.id,
+                    category: document.getElementById("reportCategory").value,
+                    priority: document.getElementById("reportPriority").value,
+                    description: document.getElementById("reportDescription").value.trim(),
+                    latitude: coordinates.latitude ?? null,
+                    longitude: coordinates.longitude ?? null
+                });
+
+                if (error) throw error;
+                setReportMessage("Report submitted successfully.");
+                reportForm.reset();
+                document.getElementById("includeReportLocation").checked = true;
+            } catch (error) {
+                setReportMessage(error.message, true);
+            } finally {
+                submitReportBtn.disabled = false;
+            }
+        }
+
+        checkInBtn.addEventListener("click", recordCheckIn);
+        checkOutBtn.addEventListener("click", recordCheckOut);
+        reportIssueBtn.addEventListener("click", () => {
+            reportPanel.hidden = false;
+            document.getElementById("reportCategory").focus();
+        });
+        closeReportBtn.addEventListener("click", closeReportForm);
+        cancelReportBtn.addEventListener("click", closeReportForm);
+        reportForm.addEventListener("submit", submitReport);
+        viewTasksBtn.addEventListener("click", async () => {
+            tasksPanel.hidden = false;
+            await loadMyTasks();
+        });
+        closeTasksBtn.addEventListener("click", closeTaskPanel);
+        logoutBtn.addEventListener("click", async function () {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                setMessage(`Logout failed: ${error.message}`, true);
+                return;
+            }
+            window.location.href = "pages/login.html";
+        });
+
+        loadAttendance();
+        loadAssignment();
+        loadMyTasks();
+    </script>
+
+</body>
+
+</html>
