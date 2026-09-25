@@ -6,9 +6,11 @@ alter table public.attendance
     add column if not exists check_in_at timestamptz default timezone('utc', now()),
     add column if not exists check_in_latitude double precision,
     add column if not exists check_in_longitude double precision,
+    add column if not exists check_in_location_name text,
     add column if not exists check_out_at timestamptz,
     add column if not exists check_out_latitude double precision,
-    add column if not exists check_out_longitude double precision;
+    add column if not exists check_out_longitude double precision,
+    add column if not exists check_out_location_name text;
 
 create index if not exists attendance_user_check_in_idx
     on public.attendance (user_id, check_in_at desc);
@@ -34,6 +36,11 @@ create policy "Users can close their own attendance"
     on public.attendance for update
     using (auth.uid() = user_id)
     with check (auth.uid() = user_id);
+
+drop policy if exists "Admins can view all attendance" on public.attendance;
+create policy "Admins can view all attendance"
+    on public.attendance for select
+    using (public.is_admin());
 
 -- Refresh the API schema cache after the columns are added.
 notify pgrst, 'reload schema';

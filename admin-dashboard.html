@@ -55,6 +55,16 @@
                 </div>
             </section>
 
+            <section class="admin-panel attendance-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="dashboard-label">LIVE ATTENDANCE</p>
+                        <h3>Volunteer Check-ins</h3>
+                    </div>
+                </div>
+                <div id="attendanceGrid" class="attendance-grid"></div>
+            </section>
+
             <section class="admin-panel task-panel">
                 <div class="panel-header">
                     <div>
@@ -158,10 +168,65 @@
         const accountSelect = document.getElementById("accountSelect");
         const accountRole = document.getElementById("accountRole");
         const accountMessage = document.getElementById("accountMessage");
+        const attendanceGrid = document.getElementById("attendanceGrid");
 
         function formatDate(value) {
             if (!value) return 'No due date';
             return new Date(value).toLocaleDateString();
+        }
+
+        function formatDateTime(value) {
+            return value ? new Date(value).toLocaleString() : "Still checked in";
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"]/g, (character) => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"
+            }[character]));
+        }
+
+        function renderAttendance(records, profiles) {
+            const profileMap = new Map((profiles || []).map((profile) => [profile.id, profile]));
+            if (!records.length) {
+                attendanceGrid.innerHTML = '<div class="empty-note">No attendance records yet.</div>';
+                return;
+            }
+
+            attendanceGrid.innerHTML = records.map((record) => {
+                const profile = profileMap.get(record.user_id);
+                const checkInLocation = record.check_in_location_name || (record.check_in_latitude != null
+                    ? `${Number(record.check_in_latitude).toFixed(5)}, ${Number(record.check_in_longitude).toFixed(5)}`
+                    : "Not recorded");
+                const checkOutLocation = record.check_out_location_name || (record.check_out_latitude != null
+                    ? `${Number(record.check_out_latitude).toFixed(5)}, ${Number(record.check_out_longitude).toFixed(5)}`
+                    : "Not checked out");
+                return `
+                    <article class="attendance-card">
+                        <div class="attendance-card-header">
+                            <strong>${escapeHtml(profile?.full_name || "Unknown volunteer")}</strong>
+                            <span class="task-status ${record.check_out_at ? "done" : "pending"}">${record.check_out_at ? "COMPLETED" : "ACTIVE"}</span>
+                        </div>
+                        <p><b>Check-in:</b> ${escapeHtml(formatDateTime(record.check_in_at))}</p>
+                        <p><b>Check-in location:</b> ${escapeHtml(checkInLocation)}</p>
+                        <p><b>Check-out:</b> ${escapeHtml(formatDateTime(record.check_out_at))}</p>
+                        <p><b>Check-out location:</b> ${escapeHtml(checkOutLocation)}</p>
+                    </article>
+                `;
+            }).join("");
+        }
+
+        async function loadAttendance() {
+            const [{ data: attendance, error: attendanceError }, { data: profiles, error: profilesError }] = await Promise.all([
+                supabaseClient.from("attendance").select("*").order("check_in_at", { ascending: false }).limit(100),
+                supabaseClient.from("profiles").select("id, full_name")
+            ]);
+
+            if (attendanceError || profilesError) {
+                attendanceGrid.innerHTML = '<div class="empty-note error-text">Unable to load attendance records. Run the updated attendance SQL in Supabase.</div>';
+                return;
+            }
+
+            renderAttendance(attendance || [], profiles || []);
         }
 
         function renderTasks(tasks) {
@@ -346,6 +411,7 @@
         ensureAdminAccess();
         loadTasks();
         loadProfiles();
+        loadAttendance();
     </script>
 </body>
 

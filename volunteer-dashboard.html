@@ -273,6 +273,28 @@
             });
         }
 
+        async function getLocationName(latitude, longitude) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}`, {
+                    headers: { "Accept-Language": "en" }
+                });
+                if (!response.ok) return null;
+                const data = await response.json();
+                return data.display_name || null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function formatLocation(record, prefix) {
+            const name = record[`${prefix}_location_name`];
+            const latitude = record[`${prefix}_latitude`];
+            const longitude = record[`${prefix}_longitude`];
+            if (name) return name;
+            if (latitude == null || longitude == null) return "Location not recorded";
+            return `${Number(latitude).toFixed(5)}, ${Number(longitude).toFixed(5)}`;
+        }
+
         function updateAttendanceView(record) {
             activeAttendance = record;
             const checkedIn = Boolean(record && !record.check_out_at);
@@ -290,11 +312,7 @@
                 ? `In: ${formatDate(record.check_in_at)} | Out: ${formatDate(record.check_out_at)}`
                 : `In: ${formatDate(record.check_in_at)}`;
 
-            const latitude = record.check_out_at ? record.check_out_latitude : record.check_in_latitude;
-            const longitude = record.check_out_at ? record.check_out_longitude : record.check_in_longitude;
-            locationStatus.textContent = latitude == null || longitude == null
-                ? "Location not recorded"
-                : `Location: ${Number(latitude).toFixed(5)}, ${Number(longitude).toFixed(5)}`;
+            locationStatus.textContent = `Location: ${formatLocation(record, record.check_out_at ? "check_out" : "check_in")}`;
         }
 
         async function loadAttendance() {
@@ -351,12 +369,14 @@
                 const { data: { user } } = await supabaseClient.auth.getUser();
                 if (!user) throw new Error("Your session has expired. Please sign in again.");
                 const coordinates = await getLocation();
+                const locationName = await getLocationName(coordinates.latitude, coordinates.longitude);
                 const { data, error } = await supabaseClient
                     .from("attendance")
                     .insert({
                         user_id: user.id,
                         check_in_latitude: coordinates.latitude,
-                        check_in_longitude: coordinates.longitude
+                        check_in_longitude: coordinates.longitude,
+                        check_in_location_name: locationName
                     })
                     .select()
                     .single();
@@ -377,11 +397,13 @@
 
             try {
                 const coordinates = await getLocation();
+                const locationName = await getLocationName(coordinates.latitude, coordinates.longitude);
                 const { data, error } = await supabaseClient
                     .from("attendance")
                     .update({
                         check_out_latitude: coordinates.latitude,
                         check_out_longitude: coordinates.longitude,
+                        check_out_location_name: locationName,
                         check_out_at: new Date().toISOString()
                     })
                     .eq("id", activeAttendance.id)
